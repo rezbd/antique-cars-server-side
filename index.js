@@ -25,7 +25,8 @@ async function run() {
         const servicesCollection = database.collection('services');
         // database collection for reviews
         const reviewsCollection = database.collection('reviews');
-
+        // database collection for placed orders
+        const orderCollection = database.collection('orders');
 
         // GET API services
         app.get('/services', async (req, res) => {
@@ -79,6 +80,29 @@ async function run() {
             res.json(result);
         })
 
+        // Add or confirm Orders API
+        app.post('/orders', async (req, res) => {
+            const order = req.body;
+            const result = await orderCollection.insertOne(order);
+            res.json(result);
+        })
+
+        // my orders
+        app.get(`/myOrders/:email`, async (req, res) => {
+            const result = await orderCollection
+                .find({ email: req.params.email })
+                .toArray();
+            res.send(result);
+        })
+
+        // new attempt
+        /*  app.post('/myOrders/:email', async (req, res) => {
+             const keys = req.body;
+             const query = { email: { $in: keys } }
+             const result = await orderCollection.find(query).toArray();
+             console.log(result);
+         });
+  */
     }
     finally {
         // await client.close();
