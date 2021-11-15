@@ -95,14 +95,14 @@ async function run() {
             res.send(result);
         })
 
-        // new attempt
-        /*  app.post('/myOrders/:email', async (req, res) => {
-             const keys = req.body;
-             const query = { email: { $in: keys } }
-             const result = await orderCollection.find(query).toArray();
-             console.log(result);
-         });
-  */
+        // cancel an order from my orders
+        app.delete(`/deleteOrder/:id`, async (req, res) => {
+            const result = await orderCollection.deleteOne({
+                _id: ObjectId(req.params.id),
+            });
+            res.send(result);
+        });
+
     }
     finally {
         // await client.close();
