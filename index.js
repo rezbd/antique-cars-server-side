@@ -27,6 +27,8 @@ async function run() {
         const reviewsCollection = database.collection('reviews');
         // database collection for placed orders
         const orderCollection = database.collection('orders');
+        // database collection for users
+        const usersCollection = database.collection('users');
 
         // GET API services
         app.get('/services', async (req, res) => {
@@ -102,6 +104,34 @@ async function run() {
             });
             res.send(result);
         });
+
+        // usersCollection step one
+        app.post('/users', async (req, res) => {
+            const user = req.body;
+            const result = await usersCollection.insertOne(user);
+            console.log(result);
+            res.json(result);
+        });
+
+        // usersCollection part two
+        app.put('/users', async (req, res) => {
+            const user = req.body;
+            const filter = { email: user.email };
+            const options = { upsert: true };
+            const updateDoc = { $set: user };
+            const result = await usersCollection.updateOne(filter, updateDoc, options);
+            res.json(result);
+        });
+
+        // Make an admin from usersCollection
+        app.put('/users/admin', async (req, res) => {
+            const user = req.body;
+            console.log('put', user);
+            const filter = { email: user.email };
+            const updateDoc = { $set: { role: 'admin' } };
+            const result = await usersCollection.updateOne(filter, updateDoc);
+            res.json(result);
+        })
 
     }
     finally {
